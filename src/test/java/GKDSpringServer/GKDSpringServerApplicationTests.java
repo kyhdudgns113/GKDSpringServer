@@ -1,13 +1,11 @@
-package com.example.GKDSpringServer;
+package GKDSpringServer;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GkdSpringServerApplicationTests {
+class GKDSpringServerApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
-
+    @Test
+    void contextLoads() {}
 }

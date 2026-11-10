@@ -1,1 +1,1 @@
-26.11.10 :heavy_plus_sign: [Server] 코드 구조 개편 및 초기 api 형태 구현
+26.11.10 :sparkles: [Server] JPA/MySQL 연동 및 회원가입 API 구현

@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GkdSpringServerApplication {
+public class GKDSpringServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GkdSpringServerApplication.class, args);
+        SpringApplication.run(GKDSpringServerApplication.class, args);
     }
 
 }
