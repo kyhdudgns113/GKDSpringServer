@@ -1,7 +1,7 @@
 package GKDSpringServer.url.auth;
 
-import GKDSpringServer.common.httpTypes.HTTPResponseTypes;
-import GKDSpringServer.common.httpTypes.HttpRequestTypes;
+import GKDSpringServer.common.httpTypes.BaseType;
+import GKDSpringServer.common.httpTypes.auth.AuthRequestTypes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,14 +17,15 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signUp")
-    public HTTPResponseTypes.BaseType signUp(@RequestBody HttpRequestTypes.SignUpRequestType request) {
-        return authService.signUp(request);
-    }
-
     @GetMapping("/refreshToken")
-    public HTTPResponseTypes.BaseType refreshToken(
+    public BaseType refreshToken(
             @RequestHeader(value = "Authorization", required = false) String authorization) {
         return authService.refreshToken(authorization);
     }
+
+    @PostMapping("/signUp")
+    public BaseType signUp(@RequestBody AuthRequestTypes.SignUpRequestType request) {
+        return authService.signUp(request);
+    }
+
 }

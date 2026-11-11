@@ -3,11 +3,15 @@ package GKDSpringServer.url.auth;
 import static GKDSpringServer.base.utils.HttpResponseUtils.fail;
 import static GKDSpringServer.base.utils.HttpResponseUtils.ok;
 
-import GKDSpringServer.common.httpTypes.HTTPResponseTypes;
-import GKDSpringServer.common.httpTypes.HttpRequestTypes;
+import GKDSpringServer.common.commonObjTypes.CAuthObjTypes;
+import GKDSpringServer.common.commonUtils.Secret;
+import GKDSpringServer.common.httpTypes.BaseType;
+import GKDSpringServer.common.httpTypes.auth.AuthRequestTypes;
+import GKDSpringServer.common.httpTypes.auth.AuthResponseTypes;
 import GKDSpringServer.common.jwt.JwtService;
 import GKDSpringServer.db.user.UserEntity;
 import GKDSpringServer.db.user.UserRepository;
+
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,12 +29,34 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    public HTTPResponseTypes.BaseType refreshToken(String authorization) {
-        return fail(501, "미구현");
+    public BaseType refreshToken(String authorization) {
+        String jwtFromClient = authorization;
+
+        if (jwtFromClient == null
+                || jwtFromClient.length() <= Secret.BAREER_PREFIX_LENGTH + Secret.BAREER_POSTFIX_LENGTH) {
+            return fail(400, "유효하지 않은 토큰입니다");
+        }
+
+        try {
+            CAuthObjTypes.AuthObjectType authObj = jwtService.verify(jwtFromClient);
+            UserEntity user = userRepository.findByUserId(authObj.userId()).orElse(null);
+            if (user == null) {
+                return fail(400, "유효하지 않은 토큰입니다");
+            }
+
+            return ok(new AuthResponseTypes.Auth_RefreshTokenBodyType(
+                    jwtService.create(user),
+                    user.getUserAuth(),
+                    user.getUserEmail(),
+                    user.getUserId(),
+                    user.getUserName()));
+        } catch (Exception e) {
+            return fail(400, "유효하지 않은 토큰입니다");
+        }
     }
 
     @Transactional
-    public HTTPResponseTypes.BaseType signUp(HttpRequestTypes.SignUpRequestType request) {
+    public BaseType signUp(AuthRequestTypes.SignUpRequestType request) {
         int userAuth = 0;
         String userEmail = request.userEmail();
         String userId = request.userId();
@@ -58,8 +84,6 @@ public class AuthService {
             return fail(400, "중복된 값입니다");
         }
 
-        HTTPResponseTypes.Auth_SignUpBodyType body = new HTTPResponseTypes.Auth_SignUpBodyType(jwtService.create(user),
-                userAuth);
-        return ok(body);
+        return ok(new AuthResponseTypes.Auth_SignUpBodyType(jwtService.create(user), userAuth));
     }
 }
